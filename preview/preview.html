@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MMM-VMflow preview</title>
+  <link rel="stylesheet" href="../MMM-VMflow.css">
+  <style>
+    body { margin: 0; background: #000; color: #dcdcdc; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    #stage { width: 380px; padding: 22px; }
+    /* Ticker needs unrestricted width so text doesn't wrap */
+    .MMM-VMflow.vmf-ticker #stageinner,
+    .vmf-ticker-line { white-space: nowrap; }
+    /* Debug nav — hidden in screenshot mode */
+    #nav { padding: 10px 22px; display: flex; gap: 8px; flex-wrap: wrap; }
+    #nav a { color: #888; font-size: 11px; text-decoration: none; border: 1px solid #333; padding: 3px 8px; border-radius: 3px; }
+    #nav a:hover { color: #dcdcdc; border-color: #666; }
+    #nav a.active { color: #fff; border-color: #666; background: #222; }
+  </style>
+</head>
+<body>
+  <!-- Quick-navigation links — useful when opening directly in a browser -->
+  <div id="nav">
+    <a href="?layout=combo&lang=de">combo</a>
+    <a href="?layout=kpi&lang=de">kpi</a>
+    <a href="?layout=feed&lang=de">feed</a>
+    <a href="?layout=refillStatus&lang=de">refillStatus</a>
+    <a href="?layout=refillProducts&lang=de">refillProducts</a>
+    <a href="?layout=fleet&lang=de">fleet</a>
+    <a href="?layout=ticker&lang=de">ticker</a>
+    <span style="color:#555;font-size:11px;align-self:center">|</span>
+    <a href="?layout=combo&lang=en">en</a>
+    <a href="?layout=combo&lang=de">de</a>
+  </div>
+
+  <div id="stage">
+    <div id="mount" class="MMM-VMflow"></div>
+  </div>
+
+  <!-- Translation maps inlined so file:// works without a CORS policy -->
+  <script>
+    window.VMFLOW_STRINGS = {
+      en: {
+        "TODAY": "Today",
+        "YESTERDAY": "yesterday",
+        "THIS_WEEK": "This week",
+        "THIS_MONTH": "This month",
+        "REVENUE_TODAY": "Revenue today",
+        "SALES_N": "{n} sales",
+        "VS": "vs",
+        "TOP_TODAY": "Top today",
+        "RECENT_SALES": "Recent sales",
+        "REFILL_NEEDED": "Refill needed",
+        "REFILL_PRODUCTS": "Refill products",
+        "FLEET": "Machines",
+        "ALL_OK": "all stocked",
+        "REST_OK": "others ok",
+        "OF": "of",
+        "IN_STOCK": "In stock",
+        "SWAP": "Swap",
+        "NO_STOCK": "No stock",
+        "OFFLINE": "offline",
+        "ONLINE": "online",
+        "EMPTY_N": "{n} empty",
+        "LOW_N": "{n} low",
+        "NO_DATA": "No data yet",
+        "SETUP_NEEDED": "Set baseUrl + apiKey in config",
+        "AS_OF": "as of {t}",
+        "ERR_UNAUTHORIZED": "API key rejected",
+        "ERR_RATE_LIMITED": "Rate limited",
+        "ERR_NETWORK": "Backend unreachable",
+        "ERR_UNKNOWN": "Temporary error",
+        "ERR_CONFIG": "Set baseUrl + apiKey in config",
+        "AGO_NOW": "now",
+        "AGO_MIN": "{n}m",
+        "AGO_HOUR": "{n}h",
+        "AGO_DAY": "{n}d"
+      },
+      de: {
+        "TODAY": "Heute",
+        "YESTERDAY": "gestern",
+        "THIS_WEEK": "Diese Woche",
+        "THIS_MONTH": "Dieser Monat",
+        "REVENUE_TODAY": "Umsatz heute",
+        "SALES_N": "{n} Verkäufe",
+        "VS": "ggü.",
+        "TOP_TODAY": "Top heute",
+        "RECENT_SALES": "Letzte Verkäufe",
+        "REFILL_NEEDED": "Nachfüllen nötig",
+        "REFILL_PRODUCTS": "Nachfüll-Produkte",
+        "FLEET": "Automaten",
+        "ALL_OK": "alles aufgefüllt",
+        "REST_OK": "Rest ok",
+        "OF": "von",
+        "IN_STOCK": "Im Lager",
+        "SWAP": "Tauschen",
+        "NO_STOCK": "Kein Lager",
+        "OFFLINE": "offline",
+        "ONLINE": "online",
+        "EMPTY_N": "{n} leer",
+        "LOW_N": "{n} niedrig",
+        "NO_DATA": "Noch keine Daten",
+        "SETUP_NEEDED": "baseUrl + apiKey in der Config setzen",
+        "AS_OF": "Stand {t}",
+        "ERR_UNAUTHORIZED": "API-Key abgelehnt",
+        "ERR_RATE_LIMITED": "Rate-Limit erreicht",
+        "ERR_NETWORK": "Backend nicht erreichbar",
+        "ERR_UNKNOWN": "Vorübergehender Fehler",
+        "ERR_CONFIG": "baseUrl + apiKey in der Config setzen",
+        "AGO_NOW": "jetzt",
+        "AGO_MIN": "vor {n}m",
+        "AGO_HOUR": "vor {n}h",
+        "AGO_DAY": "vor {n}d"
+      }
+    }
+  </script>
+
+  <!-- Renderers: _shared must load first -->
+  <script src="../renderers/_shared.js"></script>
+  <script src="../renderers/combo.js"></script>
+  <script src="../renderers/kpi.js"></script>
+  <script src="../renderers/feed.js"></script>
+  <script src="../renderers/refillStatus.js"></script>
+  <script src="../renderers/refillProducts.js"></script>
+  <script src="../renderers/fleet.js"></script>
+  <script src="../renderers/ticker.js"></script>
+  <script src="sample-data.js"></script>
+
+  <script>
+    ;(function () {
+      var params = new URLSearchParams(location.search)
+      var layout = params.get('layout') || 'combo'
+      var lang   = params.get('lang')   || 'de'
+
+      // Highlight the active nav link
+      document.querySelectorAll('#nav a').forEach(function (a) {
+        var href = a.getAttribute('href')
+        if (href && href.indexOf('layout=' + layout) !== -1 && href.indexOf('lang=' + lang) !== -1) {
+          a.className = 'active'
+        }
+      })
+
+      var STR = window.VMFLOW_STRINGS
+
+      function t(k, v) {
+        var s = (STR[lang] && STR[lang][k]) != null ? STR[lang][k] : k
+        if (v) for (var kk in v) s = s.replace('{' + kk + '}', v[kk])
+        return s
+      }
+
+      // Fixed nowMs — identical to the timestamps used in sample-data.js
+      var nowMs = Date.parse('2026-05-29T14:00:00+02:00')
+
+      var ctx = {
+        t: t,
+        locale:   lang === 'de' ? 'de-DE' : 'en-US',
+        config:   { showImages: false, baseUrl: '' },
+        nowMs:    nowMs,
+        imageUrl: function () { return '' },
+      }
+
+      var mount = document.getElementById('mount')
+      mount.className = 'MMM-VMflow' + (layout === 'ticker' ? ' vmf-ticker' : '')
+
+      if (!window.VMflowRenderers || !window.VMflowRenderers[layout]) {
+        mount.textContent = 'Unknown layout: ' + layout
+        return
+      }
+
+      mount.appendChild(window.VMflowRenderers[layout](window.VMFLOW_SAMPLE, ctx))
+    })()
+  </script>
+</body>
+</html>
