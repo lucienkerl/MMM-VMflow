@@ -1,0 +1,12 @@
+{
+  "name": "mmm-vmflow",
+  "version": "1.0.0",
+  "description": "MagicMirror² module for VMflow vending-machine data (sales, revenue, refill status).",
+  "main": "MMM-VMflow.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["MagicMirror", "vending", "vmflow"],
+  "license": "MIT",
+  "engines": { "node": ">=18" }
+}
