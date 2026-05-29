@@ -114,6 +114,16 @@ This uses the default `combo` layout with a 60-second poll interval.
 | `timezone` | `string\|null` | `null` | IANA timezone string (e.g. `'Europe/Berlin'`) used for "today/yesterday/this month" bucketing. `null` (the default) uses the mirror host's local timezone. Set this if your mirror runs in a different timezone from the vending machines. |
 | `header` | `string\|null` | `null` | Optional MagicMirror module header. `null` means no header is shown. |
 
+### Language
+
+The module's UI follows your mirror's **global** language setting — the top-level `language` field in `~/MagicMirror/config/config.js` (not a per-module option):
+
+```js
+language: "de", // or "en"
+```
+
+All labels are translated automatically (`en` and `de` are bundled; `en` is used as a fallback for any other language), and currency/number formatting follows the mirror's `locale`/`language` too. No module-level configuration is needed. The screenshots above show the English UI; the German equivalents are in [`screenshots/de/`](screenshots/de/).
+
 ---
 
 ## Per-layout guide

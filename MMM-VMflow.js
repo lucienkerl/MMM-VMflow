@@ -44,7 +44,9 @@ Module.register('MMM-VMflow', {
     const self = this
     return {
       t: (k, v) => self.translate(k, v || {}),
-      locale: (this.config.language || (typeof config !== 'undefined' && config.language) || 'en'),
+      // Currency/number locale follows the mirror's GLOBAL setting (config.locale, then
+      // config.language) — same source as the translated labels, so they never desync.
+      locale: (typeof config !== 'undefined' && (config.locale || config.language)) || 'en',
       config: this.config,
       nowMs: Date.now(),
       imageUrl: (path) => `${String(self.config.baseUrl).replace(/\/+$/, '')}/storage/v1/object/public/product-images/${path}`,

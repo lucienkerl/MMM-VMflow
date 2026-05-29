@@ -114,6 +114,16 @@ Dies verwendet das Standard-Layout `combo` mit einem 60-Sekunden-Abfrageinterval
 | `timezone` | `string\|null` | `null` | IANA-Zeitzonenstring (z. B. `'Europe/Berlin'`) für die Einteilung in „heute/gestern/diesen Monat". `null` (Standard) verwendet die lokale Zeitzone des Spiegel-Hosts. Setze dies, wenn der Mirror in einer anderen Zeitzone als die Automaten betrieben wird. |
 | `header` | `string\|null` | `null` | Optionaler MagicMirror-Modul-Header. `null` bedeutet, dass kein Header angezeigt wird. |
 
+### Sprache
+
+Die Benutzeroberfläche des Moduls folgt der **globalen** Spracheinstellung des Mirrors — dem obersten `language`-Feld in `~/MagicMirror/config/config.js` (keine Moduloption):
+
+```js
+language: "de", // oder "en"
+```
+
+Alle Beschriftungen werden automatisch übersetzt (`en` und `de` sind mitgeliefert; `en` dient als Fallback für jede andere Sprache), und auch die Währungs- und Zahlenformatierung folgt dem `locale`/`language`-Wert des Mirrors. Eine Konfiguration auf Modulebene ist nicht erforderlich. Die obigen Screenshots zeigen die deutsche Oberfläche; die englischen Entsprechungen befinden sich in [`screenshots/en/`](screenshots/en/).
+
 ---
 
 ## Layout-Handbuch
