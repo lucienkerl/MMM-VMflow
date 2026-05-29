@@ -1,8 +1,10 @@
+**English** · [Deutsch](README.de.md)
+
 # MMM-VMflow
 
 A [MagicMirror²](https://magicmirror.builders/) module that displays live vending-machine data from a self-hosted [VMflow](https://github.com/lucienkerl/mdb-esp32-cashless) backend — revenue KPIs, recent sales, refill status, and a full fleet overview — in seven configurable layouts.
 
-![combo](screenshots/combo.png)
+![combo](screenshots/en/combo.png)
 
 ---
 
@@ -24,37 +26,37 @@ The module UI ships with English and German translations (`?lang=de`). The backe
 ### Combo (cockpit)
 The default all-in-one view: today's revenue + trend, week/month blocks, and the top refill-needed machines.
 
-![combo](screenshots/combo.png)
+![combo](screenshots/en/combo.png)
 
 ### KPI
 Revenue KPIs only, plus "Top product today". Clean and compact for a corner position.
 
-![kpi](screenshots/kpi.png)
+![kpi](screenshots/en/kpi.png)
 
 ### Feed (recent sales)
 Scrolling list of the most recent vends with product name, machine, price, and time-ago.
 
-![feed](screenshots/feed.png)
+![feed](screenshots/en/feed.png)
 
 ### Refill status
 Urgency-sorted list of machines that need restocking, with fill-percentage bars.
 
-![refillStatus](screenshots/refillStatus.png)
+![refillStatus](screenshots/en/refillStatus.png)
 
 ### Refill products
 Per-machine breakdown of which specific products to refill or swap, colour-coded by severity.
 
-![refillProducts](screenshots/refillProducts.png)
+![refillProducts](screenshots/en/refillProducts.png)
 
 ### Fleet
 Two-column grid showing every machine: status dot, stock percentage, and today's revenue.
 
-![fleet](screenshots/fleet.png)
+![fleet](screenshots/en/fleet.png)
 
 ### Ticker
 A single-line summary: today's revenue + sales count + refill alert count. Designed for `top_bar` or `bottom_bar`.
 
-![ticker](screenshots/ticker.png)
+![ticker](screenshots/en/ticker.png)
 
 ---
 
@@ -120,7 +122,7 @@ This uses the default `combo` layout with a 60-second poll interval.
 
 Everything at a glance: today's revenue, trends, week/month blocks, and the top machines needing refill.
 
-![combo](screenshots/combo.png)
+![combo](screenshots/en/combo.png)
 
 **Recommended positions:** `top_right`, `top_left`
 
@@ -142,7 +144,7 @@ Everything at a glance: today's revenue, trends, week/month blocks, and the top 
 
 Today's revenue, trends, week/month comparisons, and the top-selling product today.
 
-![kpi](screenshots/kpi.png)
+![kpi](screenshots/en/kpi.png)
 
 **Recommended positions:** `top_right`
 
@@ -164,7 +166,7 @@ Today's revenue, trends, week/month comparisons, and the top-selling product tod
 
 A live list of the most recent vends. Pairs well with a `refillStatus` module on the other side.
 
-![feed](screenshots/feed.png)
+![feed](screenshots/en/feed.png)
 
 **Recommended positions:** `top_left`, `top_right`
 
@@ -188,7 +190,7 @@ A live list of the most recent vends. Pairs well with a `refillStatus` module on
 
 Machines needing restocking, sorted critical → low, with stock-percentage fill bars.
 
-![refillStatus](screenshots/refillStatus.png)
+![refillStatus](screenshots/en/refillStatus.png)
 
 **Recommended positions:** `top_left`, `top_right`
 
@@ -210,7 +212,7 @@ Machines needing restocking, sorted critical → low, with stock-percentage fill
 
 Detailed per-machine refill list with product names, severity colours, deficit counts, and in-stock / swap tags. Designed for a warehouse or refill planning context.
 
-![refillProducts](screenshots/refillProducts.png)
+![refillProducts](screenshots/en/refillProducts.png)
 
 **Recommended positions:** `top_left`, `top_right`
 
@@ -232,7 +234,7 @@ Detailed per-machine refill list with product names, severity colours, deficit c
 
 Compact two-column grid of all machines: status dot (colour = stock health or offline), stock percentage, and today's revenue.
 
-![fleet](screenshots/fleet.png)
+![fleet](screenshots/en/fleet.png)
 
 **Recommended positions:** `bottom_bar`, `lower_third`
 
@@ -254,7 +256,7 @@ Compact two-column grid of all machines: status dot (colour = stock health or of
 
 One line: today's revenue, sales count, and a refill-needed warning count. Ideal for a dedicated bar position.
 
-![ticker](screenshots/ticker.png)
+![ticker](screenshots/en/ticker.png)
 
 **Recommended positions:** `top_bar`, `bottom_bar`
 
@@ -342,12 +344,16 @@ preview/preview.html?layout=fleet&lang=de
 preview/preview.html?layout=ticker&lang=de
 ```
 
-The preview page renders on a black background with a fixed 380 px wide panel, matching a typical MagicMirror region. Capture the panel area to a PNG and save it to `screenshots/<layout>.png`.
+The preview page renders on a black background with a fixed 380 px wide panel, matching a typical MagicMirror region. Capture the panel area to a PNG and save it to `screenshots/en/<layout>.png` (English) or `screenshots/de/<layout>.png` (German).
 
 Headless Chrome also works:
 
 ```bash
-chromium --headless --screenshot=screenshots/combo.png \
+chromium --headless --screenshot=screenshots/en/combo.png \
+  --window-size=424,600 \
+  "file://$(pwd)/preview/preview.html?layout=combo&lang=en&shot=1"
+
+chromium --headless --screenshot=screenshots/de/combo.png \
   --window-size=424,600 \
   "file://$(pwd)/preview/preview.html?layout=combo&lang=de&shot=1"
 ```
