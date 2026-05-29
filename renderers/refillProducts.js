@@ -5,6 +5,9 @@
     const S = window.VMflowShared
     const root = S.el('div', 'vmf-refill-products')
     root.appendChild(S.label(ctx.t('REFILL_PRODUCTS')))
+    // Broader than combo/refillStatus' (stock_health !== 'ok'): also include machines whose
+    // ONLY deficits are non-refillable no-stock items — this renderer is the one that displays
+    // those rows, so it must not drop those machines. Do not "unify" with the narrow filter.
     const need = vm.machines.filter(m => m.stock_health !== 'ok' || (m.no_stock_summary && m.no_stock_summary.length))
     if (need.length === 0) { root.appendChild(S.el('div', 'vmf-dim', ctx.t('ALL_OK'))); return root }
     need.forEach(m => {

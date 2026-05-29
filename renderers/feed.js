@@ -8,7 +8,7 @@
     vm.feed.forEach(s => {
       const row = S.el('div', 'vmf-prow')
       const left = S.el('div', 'vmf-pleft')
-      if (ctx.config.showImages && s.imagePath) { const img = S.el('img', 'vmf-thumb'); img.src = ctx.imageUrl(s.imagePath); left.appendChild(img) }
+      if (ctx.config.showImages && s.imagePath) { const img = S.el('img', 'vmf-thumb'); img.src = ctx.imageUrl(s.imagePath); img.alt = ''; left.appendChild(img) }
       const txt = S.el('span', null, s.productName || ('#' + (s.id || '')))
       left.appendChild(txt)
       if (s.machineName) left.appendChild(S.el('span', 'vmf-dim', s.machineName))
