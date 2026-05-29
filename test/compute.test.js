@@ -20,3 +20,23 @@ test('pctChange matches the frontend formula', () => {
   assert.equal(C.pctChange(5, 0), 100)   // prev 0, cur > 0
   assert.equal(C.pctChange(0, 0), null)  // prev 0, cur 0
 })
+
+test('computeKpis buckets revenue/count into the six windows', () => {
+  const now = new Date('2026-05-29T12:00:00Z') // Berlin 14:00, key 2026-05-29
+  const tz = 'Europe/Berlin'
+  const sales = [
+    { item_price: 2.5, created_at: '2026-05-29T08:00:00Z' }, // today
+    { item_price: 1.5, created_at: '2026-05-29T06:00:00Z' }, // today
+    { item_price: 3.0, created_at: '2026-05-28T08:00:00Z' }, // yesterday
+    { item_price: 4.0, created_at: '2026-05-24T08:00:00Z' }, // within 7d (week)
+    { item_price: 9.0, created_at: '2026-05-10T08:00:00Z' }, // 19d ago: month, not week
+    { item_price: 5.0, created_at: '2026-04-15T08:00:00Z' }, // last month
+  ]
+  const k = C.computeKpis(sales, now, tz)
+  assert.equal(k.today.revenue, 4.0); assert.equal(k.today.count, 2)
+  assert.equal(k.yesterday.revenue, 3.0)
+  assert.equal(k.week.revenue, 4.0 + 2.5 + 1.5 + 3.0) // last 7 days incl today+yesterday
+  assert.equal(k.month.revenue, 2.5 + 1.5 + 3.0 + 4.0 + 9.0) // May sales
+  assert.equal(k.lastMonth.revenue, 5.0)
+  assert.equal(k.trends.today, C.pctChange(4.0, 3.0))
+})
