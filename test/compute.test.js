@@ -9,6 +9,14 @@ test('dateKey formats YYYY-MM-DD in the given tz', () => {
   assert.equal(C.dateKey(ms, 'UTC'), '2026-05-29')
 })
 
+test('dateKey is DST-correct across the Europe/Berlin spring-forward', () => {
+  // 2026-03-29 at 02:00 CET clocks spring forward to 03:00 CEST (UTC+2).
+  // 21:30 UTC = 23:30 CEST -> still 2026-03-29 locally
+  assert.equal(C.dateKey(Date.parse('2026-03-29T21:30:00Z'), 'Europe/Berlin'), '2026-03-29')
+  // 22:30 UTC = 00:30 CEST next day -> rolls over to 2026-03-30 locally
+  assert.equal(C.dateKey(Date.parse('2026-03-29T22:30:00Z'), 'Europe/Berlin'), '2026-03-30')
+})
+
 test('prevDateKey / prevMonthKey do calendar arithmetic', () => {
   assert.equal(C.prevDateKey('2026-03-01'), '2026-02-28')
   assert.equal(C.prevMonthKey('2026-01'), '2025-12')
@@ -17,8 +25,10 @@ test('prevDateKey / prevMonthKey do calendar arithmetic', () => {
 test('pctChange matches the frontend formula', () => {
   assert.equal(C.pctChange(120, 100), 20)
   assert.equal(C.pctChange(50, 100), -50)
-  assert.equal(C.pctChange(5, 0), 100)   // prev 0, cur > 0
-  assert.equal(C.pctChange(0, 0), null)  // prev 0, cur 0
+  assert.equal(C.pctChange(5, 0), 100)    // prev 0, cur > 0
+  assert.equal(C.pctChange(0, 0), null)   // prev 0, cur 0
+  assert.equal(C.pctChange(0, 5), -100)   // negative: drop to zero
+  assert.equal(C.pctChange(1015, 1000), 2) // Math.round(1.5%) rounds up to 2
 })
 
 test('computeKpis buckets revenue/count into the six windows', () => {
