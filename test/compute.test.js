@@ -40,3 +40,18 @@ test('computeKpis buckets revenue/count into the six windows', () => {
   assert.equal(k.lastMonth.revenue, 5.0)
   assert.equal(k.trends.today, C.pctChange(4.0, 3.0))
 })
+
+test('computeTopProductToday picks most-sold product today (snapshot + tray fallback)', () => {
+  const now = new Date('2026-05-29T12:00:00Z')
+  const tz = 'Europe/Berlin'
+  const productMap = new Map([['p1', { name: 'Cola' }], ['p2', { name: 'Water' }]])
+  const trayLookup = new Map([['m1:3', { product_id: 'p2', name: 'Water' }]])
+  const sales = [
+    { product_id: 'p1', created_at: '2026-05-29T08:00:00Z' },
+    { product_id: 'p1', created_at: '2026-05-29T09:00:00Z' },
+    { product_id: null, machine_id: 'm1', item_number: 3, created_at: '2026-05-29T10:00:00Z' },
+    { product_id: 'p1', created_at: '2026-05-28T09:00:00Z' }, // yesterday, ignored
+  ]
+  const top = C.computeTopProductToday(sales, now, tz, productMap, trayLookup)
+  assert.deepEqual(top, { name: 'Cola', units: 2 })
+})
