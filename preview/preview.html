@@ -132,6 +132,12 @@
       var layout = params.get('layout') || 'combo'
       var lang   = params.get('lang')   || 'de'
 
+      // Screenshot mode (?shot=1): hide the debug nav so README assets are clean.
+      if (params.get('shot') === '1') {
+        var navEl = document.getElementById('nav')
+        if (navEl) navEl.style.display = 'none'
+      }
+
       // Highlight the active nav link
       document.querySelectorAll('#nav a').forEach(function (a) {
         var href = a.getAttribute('href')
