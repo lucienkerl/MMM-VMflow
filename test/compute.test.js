@@ -55,3 +55,47 @@ test('computeTopProductToday picks most-sold product today (snapshot + tray fall
   const top = C.computeTopProductToday(sales, now, tz, productMap, trayLookup)
   assert.deepEqual(top, { name: 'Cola', units: 2 })
 })
+
+function pm() {
+  return new Map([
+    ['p1', { name: 'Cola', image_path: 'p1.jpg', sellprice: 2.5, discontinued: false }],
+    ['p2', { name: 'Water', image_path: null, sellprice: 1.5, discontinued: false }],
+    ['p3', { name: 'Old', image_path: null, sellprice: 1.0, discontinued: true }],
+  ])
+}
+
+test('computeMachineStock: empty=critical, low, fill, with warehouse availability', () => {
+  const trays = [
+    { machine_id: 'm1', item_number: 1, product_id: 'p1', capacity: 10, current_stock: 0, min_stock: 2, fill_when_below: 0 }, // empty -> critical, refillable
+    { machine_id: 'm1', item_number: 2, product_id: 'p2', capacity: 10, current_stock: 2, min_stock: 3, fill_when_below: 0 }, // low -> amber, refillable
+    { machine_id: 'm1', item_number: 3, product_id: 'p1', capacity: 10, current_stock: 4, min_stock: 0, fill_when_below: 6 }, // fill (machine already has refillable) -> aggregates into p1
+    { machine_id: 'm1', item_number: 4, product_id: 'p3', capacity: 10, current_stock: 0, min_stock: 1, fill_when_below: 0 }, // empty but NO warehouse -> swap
+  ]
+  const warehouse = new Map([['p1', 50], ['p2', 20]]) // p3 missing
+  const out = C.computeMachineStock(trays, pm(), warehouse, true).get('m1')
+  assert.equal(out.stock_health, 'critical')
+  assert.equal(out.empty_trays, 1)
+  assert.equal(out.low_trays, 2) // empty(p1) + low(p2)
+  // p1 deficit aggregated: empty tray (10-0=10) + fill tray (10-4=6) = 16, severity critical
+  const p1 = out.tray_summary.find(i => i.product_id === 'p1')
+  assert.equal(p1.deficit, 16); assert.equal(p1.severity, 'critical'); assert.equal(p1.in_stock, true)
+  // sorted by deficit desc
+  assert.equal(out.tray_summary[0].product_id, 'p1')
+  // p3 -> no_stock_summary, swap (severity critical), in_stock false
+  const p3 = out.no_stock_summary.find(i => i.product_id === 'p3')
+  assert.equal(p3.severity, 'critical'); assert.equal(p3.in_stock, false); assert.equal(p3.discontinued, true)
+})
+
+test('computeMachineStock: no warehouses => everything refillable (backward compat)', () => {
+  const trays = [{ machine_id: 'm1', item_number: 1, product_id: 'p1', capacity: 5, current_stock: 0, min_stock: 1, fill_when_below: 0 }]
+  const out = C.computeMachineStock(trays, pm(), new Map(), false).get('m1')
+  assert.equal(out.tray_summary.length, 1)
+  assert.equal(out.no_stock_summary.length, 0)
+})
+
+test('computeMachineStock: fill trays ignored when machine has no critical/low', () => {
+  const trays = [{ machine_id: 'm1', item_number: 1, product_id: 'p1', capacity: 10, current_stock: 8, min_stock: 0, fill_when_below: 9 }]
+  const out = C.computeMachineStock(trays, pm(), new Map([['p1', 5]]), true).get('m1')
+  assert.equal(out.stock_health, 'ok')
+  assert.equal(out.tray_summary.length, 0)
+})
