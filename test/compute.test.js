@@ -99,3 +99,26 @@ test('computeMachineStock: fill trays ignored when machine has no critical/low',
   assert.equal(out.stock_health, 'ok')
   assert.equal(out.tray_summary.length, 0)
 })
+
+test('buildViewModel assembles kpis/machines/feed/totals and honors machineIds filter', () => {
+  const now = new Date('2026-05-29T12:00:00Z')
+  const raw = {
+    machines: [{ id: 'm1', name: 'North', embedded: 'd1' }, { id: 'm2', name: 'South', embedded: 'd2' }],
+    devices: [{ id: 'd1', status: 'online' }, { id: 'd2', status: 'offline' }],
+    products: [{ id: 'p1', name: 'Cola', image_path: 'p1.jpg', sellprice: 2.5, discontinued: false }],
+    trays: [{ machine_id: 'm1', item_number: 1, product_id: 'p1', capacity: 10, current_stock: 0, min_stock: 2, fill_when_below: 0 }],
+    batches: [{ product_id: 'p1', quantity: 100 }],
+    sales: [{ id: 's1', created_at: '2026-05-29T08:00:00Z', item_price: 2.5, machine_id: 'm1', item_number: 1, product_id: 'p1' }],
+  }
+  const vm = C.buildViewModel(raw, { machineIds: [], maxFeedItems: 5, timezone: 'Europe/Berlin' }, now)
+  assert.equal(vm.machines.length, 2)
+  assert.equal(vm.totals.machinesOnline, 1)
+  assert.equal(vm.totals.refillMachines, 1)
+  assert.equal(vm.kpis.today.revenue, 2.5)
+  assert.equal(vm.feed[0].productName, 'Cola')
+  assert.equal(vm.feed[0].machineName, 'North')
+  // filter to m2 only -> no sales, m1 excluded
+  const vm2 = C.buildViewModel(raw, { machineIds: ['m2'], maxFeedItems: 5, timezone: 'Europe/Berlin' }, now)
+  assert.equal(vm2.machines.length, 1)
+  assert.equal(vm2.kpis.today.revenue, 0)
+})
