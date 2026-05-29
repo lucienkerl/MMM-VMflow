@@ -52,7 +52,9 @@
     if (ctx.config.showImages && item.image_path) {
       const img = el('img', 'vmf-thumb'); img.src = ctx.imageUrl(item.image_path); img.alt = ''; left.appendChild(img)
     }
-    const nameCls = !item.in_stock && item.severity === 'critical' ? 'vmf-name-swap' : 'vmf-name-' + item.severity
+    // Match machines page: in-stock → severity color; swap (no-stock+critical) → orange;
+    // dimmed no-stock (low/fill) → neutral (no color class), like the frontend's plain <span>.
+    const nameCls = item.in_stock ? ('vmf-name-' + item.severity) : (item.severity === 'critical' ? 'vmf-name-swap' : '')
     const name = el('span', nameCls)
     name.appendChild(document.createTextNode((!item.in_stock && item.severity === 'critical' ? '⇄ ' : '') + item.product_name + ' '))
     name.appendChild(el('span', 'vmf-def', `(-${item.deficit})`))

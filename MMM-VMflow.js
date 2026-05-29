@@ -1,4 +1,4 @@
-/* global Module, Log */
+/* global Module, Log, config */
 Module.register('MMM-VMflow', {
   defaults: {
     baseUrl: '', apiKey: '', layout: 'combo', machineIds: [],
@@ -44,7 +44,7 @@ Module.register('MMM-VMflow', {
     const self = this
     return {
       t: (k, v) => self.translate(k, v || {}),
-      locale: (config.language || 'en'),
+      locale: (this.config.language || (typeof config !== 'undefined' && config.language) || 'en'),
       config: this.config,
       nowMs: Date.now(),
       imageUrl: (path) => `${String(self.config.baseUrl).replace(/\/+$/, '')}/storage/v1/object/public/product-images/${path}`,
@@ -60,7 +60,12 @@ Module.register('MMM-VMflow', {
 
     if (!this.config.baseUrl || !this.config.apiKey) { wrap.appendChild(S.el('div', 'vmf-msg', this.translate('SETUP_NEEDED'))); return wrap }
     if (!this.viewModel) {
-      const msg = this.errorReason ? this.translate('ERR_' + String(this.errorReason).toUpperCase()) || this.translate('NO_DATA') : this.translate('NO_DATA')
+      let msg = this.translate('NO_DATA')
+      if (this.errorReason) {
+        const key = 'ERR_' + String(this.errorReason).toUpperCase()
+        const translated = this.translate(key)
+        msg = translated === key ? this.translate('NO_DATA') : translated // translate() echoes the key when missing
+      }
       wrap.appendChild(S.el('div', 'vmf-msg', msg)); return wrap
     }
 
