@@ -1,0 +1,11 @@
+{
+  "TODAY": "Heute", "YESTERDAY": "gestern", "THIS_WEEK": "Diese Woche", "THIS_MONTH": "Dieser Monat",
+  "REVENUE_TODAY": "Umsatz heute", "SALES_N": "{n} Verkäufe", "VS": "ggü.",
+  "TOP_TODAY": "Top heute", "RECENT_SALES": "Letzte Verkäufe", "REFILL_NEEDED": "Nachfüllen nötig",
+  "REFILL_PRODUCTS": "Nachfüll-Produkte", "FLEET": "Automaten", "ALL_OK": "alles aufgefüllt",
+  "REST_OK": "Rest ok", "OF": "von", "IN_STOCK": "Im Lager", "SWAP": "Tauschen", "NO_STOCK": "Kein Lager",
+  "OFFLINE": "offline", "ONLINE": "online", "EMPTY_N": "{n} leer", "LOW_N": "{n} niedrig",
+  "NO_DATA": "Noch keine Daten", "SETUP_NEEDED": "baseUrl + apiKey in der Config setzen", "AS_OF": "Stand {t}",
+  "ERR_UNAUTHORIZED": "API-Key abgelehnt", "ERR_RATE_LIMITED": "Rate-Limit erreicht", "ERR_NETWORK": "Backend nicht erreichbar", "ERR_UNKNOWN": "Vorübergehender Fehler", "ERR_CONFIG": "baseUrl + apiKey in der Config setzen",
+  "AGO_NOW": "jetzt", "AGO_MIN": "vor {n}m", "AGO_HOUR": "vor {n}h", "AGO_DAY": "vor {n}d"
+}
