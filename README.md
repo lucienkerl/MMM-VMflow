@@ -311,8 +311,12 @@ The API returned `429`. Either raise `updateInterval` (e.g. to `120000` for 2 mi
 - If you set `machineIds` to a list of IDs, make sure those IDs exist in your company and are spelled correctly (UUIDs).
 - Open your browser's developer tools and check the MagicMirror server console for `[MMM-VMflow]` log lines.
 
-**Numbers are off by a day**
-The "today" and "yesterday" buckets are calendar-day-based. If the mirror host's timezone differs from where the machines operate, set `timezone` to the machines' IANA timezone string (e.g. `"Europe/Berlin"`). Without this, midnight rollovers happen at the mirror's local midnight, which may differ from where the machines are located.
+**Numbers differ from the dashboard, or sales around midnight are missing**
+"Today" / "yesterday" / "this month" are bucketed by calendar day in the **host** timezone. The MagicMirror host (often a Raspberry Pi) frequently runs **UTC**, while the management dashboard counts sales in your **browser's** local timezone — so early-local-day sales (e.g. a 00:30 sale = 22:30 UTC the previous day) fall into the host's "yesterday" and disappear from the mirror's "today". Fix: set `timezone` to your IANA zone and restart:
+```js
+timezone: "Europe/Berlin",
+```
+The MagicMirror server console logs the effective zone when the module registers: `[MMM-VMflow] instance registered — bucketing timezone=…` (it warns when it's the UTC host default). You can also check the host with `timedatectl`.
 
 **Product images are not loading**
 - Enable images with `showImages: true`.

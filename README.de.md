@@ -311,8 +311,12 @@ Die API hat `429` zurückgegeben. Erhöhe entweder `updateInterval` (z. B. auf `
 - Wenn du `machineIds` auf eine Liste von IDs gesetzt hast, stelle sicher, dass diese IDs in deinem Unternehmen existieren und korrekt geschrieben sind (UUIDs).
 - Öffne die Entwicklertools im Browser und prüfe die MagicMirror-Serverkonsole auf `[MMM-VMflow]`-Logzeilen.
 
-**Zahlen sind um einen Tag verschoben**
-Die Buckets „heute" und „gestern" basieren auf Kalendertagen. Wenn die Zeitzone des Mirror-Hosts von der der Automaten abweicht, setze `timezone` auf den IANA-Zeitzonenstring der Automaten (z. B. `"Europe/Berlin"`). Ohne diese Einstellung finden Mitternacht-Übergänge zur lokalen Mitternacht des Mirrors statt, die von der des Automatenstandorts abweichen kann.
+**Zahlen weichen vom Dashboard ab / Verkäufe um Mitternacht fehlen**
+„Heute" / „gestern" / „dieser Monat" werden nach Kalendertag in der **Host-Zeitzone** eingeteilt. Der MagicMirror-Host (oft ein Raspberry Pi) läuft häufig in **UTC**, während das Management-Dashboard Verkäufe in der lokalen Zeitzone deines **Browsers** zählt — dadurch fallen Verkäufe am frühen lokalen Tag (z. B. ein Verkauf um 00:30 = 22:30 UTC am Vortag) in das „gestern" des Hosts und verschwinden aus dem „heute" des Spiegels. Lösung: `timezone` auf deine IANA-Zone setzen und neu starten:
+```js
+timezone: "Europe/Berlin",
+```
+Die MagicMirror-Serverkonsole protokolliert die verwendete Zone bei der Registrierung: `[MMM-VMflow] instance registered — bucketing timezone=…` (mit Warnung, falls es der UTC-Host-Standard ist). Den Host kannst du mit `timedatectl` prüfen.
 
 **Produktbilder werden nicht geladen**
 - Aktiviere Bilder mit `showImages: true`.
