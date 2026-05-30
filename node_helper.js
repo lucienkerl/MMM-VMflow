@@ -2,7 +2,7 @@
 const NodeHelper = require('node_helper')
 const Log = require('logger')
 const { fetchAll } = require('./lib/fetch-all')
-const { buildViewModel } = require('./lib/compute')
+const { buildViewModel, resolveTimezone } = require('./lib/compute')
 
 const MIN_INTERVAL = 15000
 
@@ -26,6 +26,14 @@ module.exports = NodeHelper.create({
     }
     b.instances.set(identifier, config)
     b.interval = Math.max(MIN_INTERVAL, Math.min(...[...b.instances.values()].map(c => c.updateInterval || 60000)))
+
+    // Surface the timezone used for day/month bucketing — the #1 cause of "sales missing
+    // around midnight" is the host defaulting to UTC. Set config.timezone to fix.
+    const tz = resolveTimezone(config)
+    Log.info(`[MMM-VMflow] instance registered — bucketing timezone=${tz}${config.timezone ? '' : ' (host default)'}`)
+    if (!config.timezone && tz === 'UTC') {
+      Log.warn('[MMM-VMflow] timezone is UTC (host default) — if early-day sales are missing from "today", set config.timezone (e.g. "Europe/Berlin").')
+    }
 
     // Serve cached data immediately to this new instance.
     if (b.lastRaw) this.emitInstance(b, identifier, config)

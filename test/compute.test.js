@@ -9,6 +9,24 @@ test('dateKey formats YYYY-MM-DD in the given tz', () => {
   assert.equal(C.dateKey(ms, 'UTC'), '2026-05-29')
 })
 
+test('resolveTimezone prefers config.timezone, falls back to the host tz', () => {
+  assert.equal(C.resolveTimezone({ timezone: 'Europe/Berlin' }), 'Europe/Berlin')
+  const host = C.resolveTimezone({})
+  assert.equal(typeof host, 'string')
+  assert.ok(host.length > 0)
+})
+
+test('early-local-day sale counts as today under the operator tz, but is dropped under UTC (the midnight-sales bug)', () => {
+  const now = new Date('2026-05-30T10:00:00Z') // 12:00 in Berlin (CEST, UTC+2)
+  // A sale at 00:30 Berlin on 2026-05-30 == 22:30 UTC on 2026-05-29.
+  const sale = { item_price: 3, created_at: '2026-05-29T22:30:00Z' }
+  const berlin = C.computeKpis([sale], now, 'Europe/Berlin')
+  assert.equal(berlin.today.revenue, 3) // ✓ counted as today in Berlin (matches the dashboard)
+  const utc = C.computeKpis([sale], now, 'UTC')
+  assert.equal(utc.today.revenue, 0)    // ✗ dropped from "today" under UTC — the reported bug
+  assert.equal(utc.yesterday.revenue, 3)
+})
+
 test('dateKey is DST-correct across the Europe/Berlin spring-forward', () => {
   // 2026-03-29 at 02:00 CET clocks spring forward to 03:00 CEST (UTC+2).
   // 21:30 UTC = 23:30 CEST -> still 2026-03-29 locally
