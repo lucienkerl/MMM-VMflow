@@ -69,5 +69,31 @@
     return row
   }
 
-  root.VMflowShared = { el, fmtCurrency, fmtPct, timeAgo, label, kpiTrend, fillBar, statusDot, productRow, periodBlock }
+  // Machines with something to show in the per-product refill view: not 'ok', OR with
+  // non-refillable no-stock items. Shared by the refillProducts and combo layouts.
+  function refillNeedingMachines(machines) {
+    return (machines || []).filter(m => m.stock_health !== 'ok' || (m.no_stock_summary && m.no_stock_summary.length))
+  }
+
+  // Per-machine product groups (header + tray_summary rows + swap + dimmed no-stock rows),
+  // faithful to the /machines page. Pass an already-filtered list (refillNeedingMachines).
+  // Returns a DocumentFragment so callers can append it under any heading.
+  function refillProductGroups(machines, ctx) {
+    const frag = document.createDocumentFragment()
+    machines.forEach(m => {
+      const head = el('div', 'vmf-row'); head.style.margin = '14px 0 6px'
+      const left = el('span'); left.appendChild(statusDot(m.stock_health)); left.appendChild(document.createTextNode(m.name))
+      head.appendChild(left); head.appendChild(el('span', 'vmf-dim', m.stock_percent + '%'))
+      frag.appendChild(head)
+      m.tray_summary.forEach(item => frag.appendChild(productRow(item, ctx)))
+      const swaps = (m.no_stock_summary || []).filter(i => i.severity === 'critical')
+      const dimmed = (m.no_stock_summary || []).filter(i => i.severity !== 'critical')
+      if (m.tray_summary.length && swaps.length) frag.appendChild(el('hr', 'vmf-divider'))
+      swaps.forEach(item => frag.appendChild(productRow(item, ctx)))
+      dimmed.forEach(item => frag.appendChild(productRow(item, ctx)))
+    })
+    return frag
+  }
+
+  root.VMflowShared = { el, fmtCurrency, fmtPct, timeAgo, label, kpiTrend, fillBar, statusDot, productRow, periodBlock, refillNeedingMachines, refillProductGroups }
 })(window)

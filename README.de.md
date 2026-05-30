@@ -24,7 +24,7 @@ Das Modul liefert englische und deutsche Übersetzungen (`?lang=de`). Die Sprach
 ## Screenshot-Galerie
 
 ### Combo (Cockpit)
-Die Standard-Gesamtansicht: heutiger Umsatz + Trend, Wochen-/Monatsblöcke und die Automaten mit dem dringendsten Nachfüllbedarf.
+Die Standard-Gesamtansicht: heutiger Umsatz + Trend, Wochen-/Monatsblöcke und – pro Automat – die genauen nachzufüllenden Produkte (dieselbe farbcodierte Liste wie das Layout Nachfüll-Produkte).
 
 ![combo](screenshots/de/combo.png)
 
@@ -131,7 +131,7 @@ Alle Beschriftungen werden automatisch übersetzt (`en` und `de` sind mitgeliefe
 
 ### `combo` — Cockpit (Standard)
 
-Alles auf einen Blick: heutiger Umsatz, Trends, Wochen-/Monatsblöcke und die Automaten mit dem dringendsten Nachfüllbedarf.
+Alles auf einen Blick: heutiger Umsatz, Trends, Wochen-/Monatsblöcke und die pro Automat nachzufüllenden Produkte (dieselbe farbcodierte Liste wie das Layout Nachfüll-Produkte).
 
 ![combo](screenshots/de/combo.png)
 

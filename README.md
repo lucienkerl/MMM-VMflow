@@ -24,7 +24,7 @@ The module UI ships with English and German translations (`?lang=de`). The backe
 ## Screenshot gallery
 
 ### Combo (cockpit)
-The default all-in-one view: today's revenue + trend, week/month blocks, and the top refill-needed machines.
+The default all-in-one view: today's revenue + trend, week/month blocks, and — per machine — the exact products to refill (the same colour-coded list as the Refill products layout).
 
 ![combo](screenshots/en/combo.png)
 
@@ -131,7 +131,7 @@ All labels are translated automatically (`en` and `de` are bundled; `en` is used
 
 ### `combo` — Cockpit (default)
 
-Everything at a glance: today's revenue, trends, week/month blocks, and the top machines needing refill.
+Everything at a glance: today's revenue, trends, week/month blocks, and the per-machine products to refill (the same colour-coded list as the Refill products layout).
 
 ![combo](screenshots/en/combo.png)
 

@@ -1,4 +1,4 @@
-/* global window, document */
+/* global window */
 (function () {
   window.VMflowRenderers = window.VMflowRenderers || {}
   window.VMflowRenderers.combo = function (vm, ctx) {
@@ -20,24 +20,13 @@
 
     root.appendChild(S.el('hr', 'vmf-divider'))
 
-    const need = vm.machines.filter(m => m.stock_health !== 'ok')
+    // Lower section: the per-machine product view (same rendering as the refillProducts layout).
+    const need = S.refillNeedingMachines(vm.machines)
     root.appendChild(S.label(`${ctx.t('REFILL_NEEDED')} · ${need.length} ${ctx.t('OF')} ${vm.totals.machinesTotal}`))
     if (need.length === 0) {
       root.appendChild(S.el('div', 'vmf-dim', ctx.t('ALL_OK')))
     } else {
-      need.slice(0, 4).forEach(m => {
-        const row = S.el('div', 'vmf-row'); row.style.margin = '8px 0'
-        const left = S.el('span'); left.appendChild(S.statusDot(m.stock_health)); left.appendChild(document.createTextNode(m.name))
-        const right = S.el('span', 'vmf-dim')
-        const parts = []
-        if (m.empty_trays > 0) parts.push(ctx.t('EMPTY_N', { n: m.empty_trays }))
-        if (m.low_trays - m.empty_trays > 0) parts.push(ctx.t('LOW_N', { n: m.low_trays - m.empty_trays }))
-        right.textContent = parts.join(' · ') + `  ${m.stock_percent}%`
-        row.appendChild(left); row.appendChild(right)
-        root.appendChild(row)
-      })
-      const okCount = vm.totals.machinesTotal - need.length
-      if (okCount > 0) root.appendChild(S.el('div', 'vmf-dim', `${ctx.t('REST_OK')} (${okCount})`))
+      root.appendChild(S.refillProductGroups(need, ctx))
     }
     return root
   }
