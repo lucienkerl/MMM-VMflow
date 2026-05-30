@@ -94,11 +94,12 @@ Add a module entry to your MagicMirror `config/config.js`:
   config: {
     baseUrl: "http://192.168.1.10:8000",  // Your VMflow backend URL
     apiKey:  "vmf_xxxxxxxxxxxxxxxx",       // API key from /api-keys dashboard
+    timezone: "Europe/Berlin",            // your IANA zone — set this! the host (e.g. a Pi) often defaults to UTC
   }
 }
 ```
 
-This uses the default `combo` layout with a 60-second poll interval.
+This uses the default `combo` layout with a 60-second poll interval. **Set `timezone`** to your IANA zone so the "today"/"month" totals line up with the dashboard — the mirror host (e.g. a Raspberry Pi) often runs UTC, which otherwise drops early-local-day sales (see [Language](#language) and Troubleshooting).
 
 ### All configuration options
 

@@ -19,8 +19,9 @@
     baseUrl: "http://<BACKEND_URL>:8000",
     apiKey:  "<API_KEY>",
     layout: "combo",
-    // updateInterval: 60000,  // poll every 60 s (default)
-    // timezone: "Europe/Berlin",  // set if mirror tz differs from machines
+    timezone: "Europe/Berlin",  // IMPORTANT: your IANA zone — the host (e.g. a Pi) often defaults to UTC,
+                                // which drops early-local-day sales from "today". Match the dashboard.
+    // updateInterval: 60000,   // poll every 60 s (default)
   }
 },
 

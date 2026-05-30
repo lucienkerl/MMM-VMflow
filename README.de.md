@@ -94,11 +94,12 @@ Füge einen Moduleintrag in die MagicMirror-Datei `config/config.js` ein:
   config: {
     baseUrl: "http://192.168.1.10:8000",  // URL deines VMflow-Backends
     apiKey:  "vmf_xxxxxxxxxxxxxxxx",       // API-Key aus dem /api-keys-Dashboard
+    timezone: "Europe/Berlin",            // deine IANA-Zone — unbedingt setzen! der Host (z. B. ein Pi) läuft oft auf UTC
   }
 }
 ```
 
-Dies verwendet das Standard-Layout `combo` mit einem 60-Sekunden-Abfrageintervall.
+Dies verwendet das Standard-Layout `combo` mit einem 60-Sekunden-Abfrageintervall. **Setze `timezone`** auf deine IANA-Zone, damit die „heute"/„Monat"-Summen mit dem Dashboard übereinstimmen — der Mirror-Host (z. B. ein Raspberry Pi) läuft oft auf UTC, wodurch sonst Verkäufe am frühen lokalen Tag fehlen (siehe [Sprache](#sprache) und Fehlerbehebung).
 
 ### Alle Konfigurationsoptionen
 
