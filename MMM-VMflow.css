@@ -22,7 +22,7 @@
 .MMM-VMflow .vmf-name-swap { color: var(--vmf-swap); }
 .MMM-VMflow .vmf-tag-in { color: var(--vmf-ok); font-size: 10px; }
 .MMM-VMflow .vmf-tag-swap { color: var(--vmf-swap); font-size: 10px; }
-.MMM-VMflow .vmf-tag-no { color: var(--vmf-dim2); font-size: 10px; }
+.MMM-VMflow .vmf-tag-no { color: #a8a8a8; font-size: 10px; }
 .MMM-VMflow .vmf-dimmed { opacity: 0.85; }
 .MMM-VMflow .vmf-bar { height: 5px; border-radius: 3px; background: var(--vmf-track); overflow: hidden; flex: 1; }
 .MMM-VMflow .vmf-bar > span { display: block; height: 100%; }
