@@ -128,6 +128,18 @@ test('computeMachineStock: fill trays ignored when machine has no critical/low',
   assert.equal(out.tray_summary.length, 0)
 })
 
+test('computeMachineStock sorts tray_summary by severity (critical→low→fill), then deficit desc', () => {
+  // A high-deficit fill product must NOT outrank a low-deficit critical one.
+  const trays = [
+    { machine_id: 'm1', item_number: 1, product_id: 'pFill', capacity: 20, current_stock: 5, min_stock: 0, fill_when_below: 10 }, // fill, deficit 15
+    { machine_id: 'm1', item_number: 2, product_id: 'pCrit', capacity: 3, current_stock: 0, min_stock: 1, fill_when_below: 0 },    // empty → critical, deficit 3
+    { machine_id: 'm1', item_number: 3, product_id: 'pLow', capacity: 10, current_stock: 2, min_stock: 3, fill_when_below: 0 },    // low, deficit 8
+  ]
+  const out = C.computeMachineStock(trays, new Map(), new Map(), false).get('m1') // no warehouses → all refillable
+  assert.deepEqual(out.tray_summary.map(i => i.severity), ['critical', 'low', 'fill'])
+  assert.deepEqual(out.tray_summary.map(i => i.product_id), ['pCrit', 'pLow', 'pFill'])
+})
+
 test('buildViewModel assembles kpis/machines/feed/totals and honors machineIds filter', () => {
   const now = new Date('2026-05-29T12:00:00Z')
   const raw = {

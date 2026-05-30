@@ -113,7 +113,7 @@ Dies verwendet das Standard-Layout `combo` mit einem 60-Sekunden-Abfrageinterval
 | `showImages` | `boolean` | `false` | Ob Produkt-Vorschaubilder im Feed und in den Nachfüll-Produkte-Layouts angezeigt werden sollen. Das Backend muss über dasselbe Schema (https) wie der Spiegel erreichbar sein, um Mixed-Content-Fehler zu vermeiden. |
 | `maxFeedItems` | `number` | `8` | Maximale Anzahl der Verkäufe im `feed`-Layout. |
 | `maxRefillRows` | `number\|null` | `null` | Maximale Anzahl der Produktzeilen **insgesamt** über alle Automaten (`combo` / `refillProducts`). `null` (Standard) zeigt alle; bei mehr wird „… N weitere Produkte" angehängt. Begrenzt die Gesamthöhe. |
-| `maxRowsPerMachine` | `number\|null` | `null` | Maximale Produktzeilen **pro Automat** (je Automat zuerst die größten Defizite; „+K weitere" unter einem gekappten Automaten). `null` zeigt alle. Kombinierbar mit `maxRefillRows` — pro-Automat hält jeden Automaten sichtbar, das Gesamt-Limit begrenzt die Höhe. |
+| `maxRowsPerMachine` | `number\|null` | `null` | Maximale Produktzeilen **pro Automat** (je Automat zuerst die kritischsten — rot → gelb → blau, dann nach benötigter Menge; „+K weitere" unter einem gekappten Automaten). `null` zeigt alle. Kombinierbar mit `maxRefillRows` — pro-Automat hält jeden Automaten sichtbar, das Gesamt-Limit begrenzt die Höhe. |
 | `timezone` | `string\|null` | `null` | IANA-Zeitzonenstring (z. B. `'Europe/Berlin'`) für die Einteilung in „heute/gestern/diesen Monat". `null` (Standard) verwendet die lokale Zeitzone des Spiegel-Hosts. Setze dies, wenn der Mirror in einer anderen Zeitzone als die Automaten betrieben wird. |
 | `header` | `string\|null` | `null` | Optionaler MagicMirror-Modul-Header. `null` bedeutet, dass kein Header angezeigt wird. |
 

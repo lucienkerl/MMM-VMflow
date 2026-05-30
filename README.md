@@ -113,7 +113,7 @@ This uses the default `combo` layout with a 60-second poll interval. **Set `time
 | `showImages` | `boolean` | `false` | Whether to display product thumbnail images in the feed and refill-products layouts. Requires the backend to be reachable over the same scheme (https) as the mirror to avoid mixed-content errors. |
 | `maxFeedItems` | `number` | `8` | Maximum number of sales to show in the `feed` layout. |
 | `maxRefillRows` | `number\|null` | `null` | Maximum number of product rows shown **in total** across machines (`combo` / `refillProducts`). `null` (the default) shows all; when more exist, a "… N more products" line is appended. Bounds overall height. |
-| `maxRowsPerMachine` | `number\|null` | `null` | Maximum product rows shown **per machine** (each machine lists its highest-deficit items first; a "+K more" line appears under a capped machine). `null` shows all. Composes with `maxRefillRows` — per-machine keeps every machine visible, the total bounds height. |
+| `maxRowsPerMachine` | `number\|null` | `null` | Maximum product rows shown **per machine** (each machine lists its most critical items first — red → amber → blue, then by needed quantity; a "+K more" line appears under a capped machine). `null` shows all. Composes with `maxRefillRows` — per-machine keeps every machine visible, the total bounds height. |
 | `timezone` | `string\|null` | `null` | IANA timezone string (e.g. `'Europe/Berlin'`) used for "today/yesterday/this month" bucketing. `null` (the default) uses the mirror host's local timezone. Set this if your mirror runs in a different timezone from the vending machines. |
 | `header` | `string\|null` | `null` | Optional MagicMirror module header. `null` means no header is shown. |
 

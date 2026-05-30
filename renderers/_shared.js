@@ -82,7 +82,8 @@
   //  - maxRowsPerMachine: max product rows PER machine → "+K more" under that machine (breadth)
   //  - maxRefillRows:     max product rows TOTAL across machines → "… N more products" at the end (height)
   // They compose; truncation is never silent. Machine headers/dividers don't count toward caps.
-  // Rows render highest-deficit-first (tray_summary, then swap, then dimmed no-stock).
+  // Rows are pre-sorted by compute.js: tray_summary by severity (critical=red → low=amber
+  // → fill=blue) then deficit desc; then swap, then dimmed no-stock.
   function refillProductGroups(machines, ctx) {
     const frag = document.createDocumentFragment()
     const cfg = ctx.config || {}

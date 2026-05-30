@@ -62,7 +62,8 @@ KPI or stock logic, re-verify against these source files in the parent project
 - **Trend %** (`components/SectionCards.vue` `pctChange`): `prev===0 ? (cur>0?100:null) : round((cur-prev)/prev*100)`.
 - **Stock health & refill summaries** (`composables/useMachines.ts`, `lib/stock-health.ts`):
   `isEmpty`/`isLow`/`isFillBelow`, per-product deficit aggregation, pass-2 fill, severity
-  `critical|low|fill`, warehouse-availability split, sort by deficit desc.
+  `critical|low|fill`, warehouse-availability split. Summaries are sorted by severity
+  (critical → low → fill), then deficit desc within each severity.
 
 Known invariants (don't regress):
 
