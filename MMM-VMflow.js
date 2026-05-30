@@ -2,7 +2,7 @@
 Module.register('MMM-VMflow', {
   defaults: {
     baseUrl: '', apiKey: '', layout: 'combo', machineIds: [],
-    updateInterval: 60000, showImages: false, maxFeedItems: 8, timezone: null,
+    updateInterval: 60000, showImages: false, maxFeedItems: 8, maxRefillRows: null, timezone: null,
     header: null,
   },
 

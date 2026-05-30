@@ -66,6 +66,7 @@
         "NO_DATA": "No data yet",
         "SETUP_NEEDED": "Set baseUrl + apiKey in config",
         "AS_OF": "as of {t}",
+        "MORE_N": "+{n} more",
         "ERR_UNAUTHORIZED": "API key rejected",
         "ERR_RATE_LIMITED": "Rate limited",
         "ERR_NETWORK": "Backend unreachable",
@@ -102,6 +103,7 @@
         "NO_DATA": "Noch keine Daten",
         "SETUP_NEEDED": "baseUrl + apiKey in der Config setzen",
         "AS_OF": "Stand {t}",
+        "MORE_N": "+{n} weitere",
         "ERR_UNAUTHORIZED": "API-Key abgelehnt",
         "ERR_RATE_LIMITED": "Rate-Limit erreicht",
         "ERR_NETWORK": "Backend nicht erreichbar",
@@ -160,7 +162,7 @@
       var ctx = {
         t: t,
         locale:   lang === 'de' ? 'de-DE' : 'en-US',
-        config:   { showImages: false, baseUrl: '' },
+        config:   { showImages: false, baseUrl: '', maxRefillRows: params.get('max') ? Number(params.get('max')) : null },
         nowMs:    nowMs,
         imageUrl: function () { return '' },
       }

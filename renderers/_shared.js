@@ -78,20 +78,34 @@
   // Per-machine product groups (header + tray_summary rows + swap + dimmed no-stock rows),
   // faithful to the /machines page. Pass an already-filtered list (refillNeedingMachines).
   // Returns a DocumentFragment so callers can append it under any heading.
+  // Optional cap: ctx.config.maxRefillRows limits the total number of product rows
+  // shown (across machines). null/absent/<=0 → show all. When capped, a "+N more" line
+  // is appended so truncation is never silent. Machine headers/dividers don't count.
   function refillProductGroups(machines, ctx) {
     const frag = document.createDocumentFragment()
-    machines.forEach(m => {
+    const capRaw = ctx.config && ctx.config.maxRefillRows
+    const cap = (capRaw == null || capRaw <= 0) ? Infinity : capRaw
+    let total = 0
+    for (const m of machines) total += m.tray_summary.length + (m.no_stock_summary || []).length
+    let shown = 0
+    for (const m of machines) {
+      if (shown >= cap) break
+      const swaps = (m.no_stock_summary || []).filter(i => i.severity === 'critical')
+      const dimmed = (m.no_stock_summary || []).filter(i => i.severity !== 'critical')
+      const take = Math.min(cap - shown, m.tray_summary.length + swaps.length + dimmed.length)
+      if (take <= 0) break
       const head = el('div', 'vmf-row'); head.style.margin = '14px 0 6px'
       const left = el('span'); left.appendChild(statusDot(m.stock_health)); left.appendChild(document.createTextNode(m.name))
       head.appendChild(left); head.appendChild(el('span', 'vmf-dim', m.stock_percent + '%'))
       frag.appendChild(head)
-      m.tray_summary.forEach(item => frag.appendChild(productRow(item, ctx)))
-      const swaps = (m.no_stock_summary || []).filter(i => i.severity === 'critical')
-      const dimmed = (m.no_stock_summary || []).filter(i => i.severity !== 'critical')
-      if (m.tray_summary.length && swaps.length) frag.appendChild(el('hr', 'vmf-divider'))
-      swaps.forEach(item => frag.appendChild(productRow(item, ctx)))
-      dimmed.forEach(item => frag.appendChild(productRow(item, ctx)))
-    })
+      let taken = 0, trayShown = 0
+      for (const item of m.tray_summary) { if (taken >= take) break; frag.appendChild(productRow(item, ctx)); taken++; trayShown++ }
+      if (trayShown > 0 && swaps.length > 0 && taken < take) frag.appendChild(el('hr', 'vmf-divider'))
+      for (const item of swaps) { if (taken >= take) break; frag.appendChild(productRow(item, ctx)); taken++ }
+      for (const item of dimmed) { if (taken >= take) break; frag.appendChild(productRow(item, ctx)); taken++ }
+      shown += taken
+    }
+    if (shown < total) frag.appendChild(el('div', 'vmf-dim vmf-more', ctx.t('MORE_N', { n: total - shown })))
     return frag
   }
 
