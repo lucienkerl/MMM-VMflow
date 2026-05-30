@@ -6,6 +6,6 @@
   "REST_OK": "Rest ok", "OF": "von", "IN_STOCK": "Im Lager", "SWAP": "Tauschen", "NO_STOCK": "Kein Lager",
   "OFFLINE": "offline", "ONLINE": "online", "EMPTY_N": "{n} leer", "LOW_N": "{n} niedrig",
   "NO_DATA": "Noch keine Daten", "SETUP_NEEDED": "baseUrl + apiKey in der Config setzen", "AS_OF": "Stand {t}",
-  "ERR_UNAUTHORIZED": "API-Key abgelehnt", "ERR_RATE_LIMITED": "Rate-Limit erreicht", "ERR_NETWORK": "Backend nicht erreichbar", "ERR_UNKNOWN": "Vorübergehender Fehler", "ERR_CONFIG": "baseUrl + apiKey in der Config setzen",
+  "ERR_UNAUTHORIZED": "API-Key abgelehnt", "ERR_RATE_LIMITED": "Rate-Limit erreicht", "ERR_NETWORK": "Backend nicht erreichbar", "ERR_TIMEOUT": "Zeitüberschreitung", "ERR_UNKNOWN": "Vorübergehender Fehler", "ERR_CONFIG": "baseUrl + apiKey in der Config setzen",
   "AGO_NOW": "jetzt", "AGO_MIN": "vor {n}m", "AGO_HOUR": "vor {n}h", "AGO_DAY": "vor {n}d"
 }

@@ -25,3 +25,18 @@ test('apiGet maps 401 and 429', async () => {
   global.fetch = async () => ({ ok: false, status: 429, json: async () => ({ retry_after: 7 }) })
   await assert.rejects(() => apiGet('http://x:8000', 'k', 'sales'), (e) => e.code === 'rate_limited' && e.retryAfter === 7)
 })
+
+test('apiGet aborts a hung request after the timeout (no permanent hang)', async () => {
+  // fetch that never settles unless its abort signal fires — simulates a stalled socket.
+  global.fetch = (_url, opts) => new Promise((_resolve, reject) => {
+    opts.signal.addEventListener('abort', () => {
+      const e = new Error('aborted'); e.name = 'AbortError'; reject(e)
+    })
+  })
+  const t0 = Date.now()
+  await assert.rejects(
+    () => apiGet('http://x:8000', 'k', 'sales', {}, 30), // 30ms timeout for the test
+    (e) => e.code === 'timeout',
+  )
+  assert.ok(Date.now() - t0 < 2000, 'should reject promptly via timeout, not hang')
+})

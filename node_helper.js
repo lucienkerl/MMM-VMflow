@@ -38,15 +38,22 @@ module.exports = NodeHelper.create({
 
   async poll(key) {
     const b = this.backends.get(key)
-    if (!b || b.fetching) return
+    if (!b) return
+    // If a previous fetch is still in flight, skip this tick. With the request timeout
+    // in api-client this self-clears within ~15s; if you see this line repeating forever,
+    // a fetch is wedged (which the timeout is meant to prevent).
+    if (b.fetching) { Log.warn(`[MMM-VMflow] poll skipped — previous fetch still running (${b.baseUrl})`); return }
     b.fetching = true
+    const t0 = Date.now()
+    Log.info(`[MMM-VMflow] poll → ${b.baseUrl}`)
     try {
       const raw = await fetchAll(b.baseUrl, b.apiKey, new Date())
       b.lastRaw = raw
+      Log.info(`[MMM-VMflow] poll ok: sales=${raw.sales.length} machines=${raw.machines.length} trays=${raw.trays.length} (${Date.now() - t0}ms)`)
       for (const [identifier, config] of b.instances) this.emitInstance(b, identifier, config)
     } catch (err) {
       const reason = err && err.code ? err.code : 'unknown'
-      Log.warn(`[MMM-VMflow] fetch failed: ${reason}`)
+      Log.warn(`[MMM-VMflow] fetch failed: ${reason} (${Date.now() - t0}ms)`)
       for (const [identifier] of b.instances) this.sendSocketNotification('VMFLOW_ERROR', { identifier, reason })
       if (reason === 'rate_limited' && err.retryAfter) {
         // back off: re-arm timer at retryAfter (bounded to MIN_INTERVAL floor)
