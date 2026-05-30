@@ -22,7 +22,8 @@
     timezone: "Europe/Berlin",  // IMPORTANT: your IANA zone — the host (e.g. a Pi) often defaults to UTC,
                                 // which drops early-local-day sales from "today". Match the dashboard.
     // updateInterval: 60000,   // poll every 60 s (default)
-    // maxRefillRows: 8,        // cap product rows (combo/refillProducts); omit = show all, with "+N more"
+    // maxRefillRows: 8,        // cap TOTAL product rows (combo/refillProducts); omit = show all
+    // maxRowsPerMachine: 3,    // cap product rows PER machine (keeps every machine visible); omit = show all
   }
 },
 

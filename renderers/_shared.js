@@ -78,21 +78,26 @@
   // Per-machine product groups (header + tray_summary rows + swap + dimmed no-stock rows),
   // faithful to the /machines page. Pass an already-filtered list (refillNeedingMachines).
   // Returns a DocumentFragment so callers can append it under any heading.
-  // Optional cap: ctx.config.maxRefillRows limits the total number of product rows
-  // shown (across machines). null/absent/<=0 → show all. When capped, a "+N more" line
-  // is appended so truncation is never silent. Machine headers/dividers don't count.
+  // Optional caps (both default null = unlimited; from ctx.config):
+  //  - maxRowsPerMachine: max product rows PER machine → "+K more" under that machine (breadth)
+  //  - maxRefillRows:     max product rows TOTAL across machines → "… N more products" at the end (height)
+  // They compose; truncation is never silent. Machine headers/dividers don't count toward caps.
+  // Rows render highest-deficit-first (tray_summary, then swap, then dimmed no-stock).
   function refillProductGroups(machines, ctx) {
     const frag = document.createDocumentFragment()
-    const capRaw = ctx.config && ctx.config.maxRefillRows
-    const cap = (capRaw == null || capRaw <= 0) ? Infinity : capRaw
+    const cfg = ctx.config || {}
+    const norm = (v) => (v == null || v <= 0) ? Infinity : v
+    const cap = norm(cfg.maxRefillRows)
+    const perCap = norm(cfg.maxRowsPerMachine)
     let total = 0
     for (const m of machines) total += m.tray_summary.length + (m.no_stock_summary || []).length
-    let shown = 0
+    let shown = 0, announced = 0
     for (const m of machines) {
       if (shown >= cap) break
       const swaps = (m.no_stock_summary || []).filter(i => i.severity === 'critical')
       const dimmed = (m.no_stock_summary || []).filter(i => i.severity !== 'critical')
-      const take = Math.min(cap - shown, m.tray_summary.length + swaps.length + dimmed.length)
+      const avail = m.tray_summary.length + swaps.length + dimmed.length
+      const take = Math.min(perCap, avail, cap - shown)
       if (take <= 0) break
       const head = el('div', 'vmf-row'); head.style.margin = '14px 0 6px'
       const left = el('span'); left.appendChild(statusDot(m.stock_health)); left.appendChild(document.createTextNode(m.name))
@@ -104,8 +109,14 @@
       for (const item of swaps) { if (taken >= take) break; frag.appendChild(productRow(item, ctx)); taken++ }
       for (const item of dimmed) { if (taken >= take) break; frag.appendChild(productRow(item, ctx)); taken++ }
       shown += taken
+      // per-machine "+K more" only when the PER-MACHINE cap (not the global cap) hid this machine's rows
+      if (take < avail && take === perCap) {
+        frag.appendChild(el('div', 'vmf-dim vmf-more-m', ctx.t('MORE_PER_N', { n: avail - take })))
+        announced += avail - take
+      }
     }
-    if (shown < total) frag.appendChild(el('div', 'vmf-dim vmf-more', ctx.t('MORE_N', { n: total - shown })))
+    const remainder = total - shown - announced // rows hidden by the GLOBAL cap (not already announced per machine)
+    if (remainder > 0) frag.appendChild(el('div', 'vmf-dim vmf-more', ctx.t('MORE_N', { n: remainder })))
     return frag
   }
 

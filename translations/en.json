@@ -5,7 +5,7 @@
   "REFILL_PRODUCTS": "Refill products", "FLEET": "Machines", "ALL_OK": "all stocked",
   "REST_OK": "others ok", "OF": "of", "IN_STOCK": "In stock", "SWAP": "Swap", "NO_STOCK": "No stock",
   "OFFLINE": "offline", "ONLINE": "online", "EMPTY_N": "{n} empty", "LOW_N": "{n} low",
-  "NO_DATA": "No data yet", "SETUP_NEEDED": "Set baseUrl + apiKey in config", "AS_OF": "as of {t}", "MORE_N": "{n} more products …",
+  "NO_DATA": "No data yet", "SETUP_NEEDED": "Set baseUrl + apiKey in config", "AS_OF": "as of {t}", "MORE_N": "{n} more products …", "MORE_PER_N": "+{n} more",
   "ERR_UNAUTHORIZED": "API key rejected", "ERR_RATE_LIMITED": "Rate limited", "ERR_NETWORK": "Backend unreachable", "ERR_TIMEOUT": "Backend timed out", "ERR_UNKNOWN": "Temporary error", "ERR_CONFIG": "Set baseUrl + apiKey in config",
   "AGO_NOW": "now", "AGO_MIN": "{n}m", "AGO_HOUR": "{n}h", "AGO_DAY": "{n}d"
 }

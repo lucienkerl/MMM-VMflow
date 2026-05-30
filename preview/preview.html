@@ -67,6 +67,7 @@
         "SETUP_NEEDED": "Set baseUrl + apiKey in config",
         "AS_OF": "as of {t}",
         "MORE_N": "{n} more products …",
+        "MORE_PER_N": "+{n} more",
         "ERR_UNAUTHORIZED": "API key rejected",
         "ERR_RATE_LIMITED": "Rate limited",
         "ERR_NETWORK": "Backend unreachable",
@@ -104,6 +105,7 @@
         "SETUP_NEEDED": "baseUrl + apiKey in der Config setzen",
         "AS_OF": "Stand {t}",
         "MORE_N": "{n} weitere Produkte …",
+        "MORE_PER_N": "+{n} weitere",
         "ERR_UNAUTHORIZED": "API-Key abgelehnt",
         "ERR_RATE_LIMITED": "Rate-Limit erreicht",
         "ERR_NETWORK": "Backend nicht erreichbar",
@@ -162,7 +164,7 @@
       var ctx = {
         t: t,
         locale:   lang === 'de' ? 'de-DE' : 'en-US',
-        config:   { showImages: false, baseUrl: '', maxRefillRows: params.get('max') ? Number(params.get('max')) : null },
+        config:   { showImages: false, baseUrl: '', maxRefillRows: params.get('max') ? Number(params.get('max')) : null, maxRowsPerMachine: params.get('permax') ? Number(params.get('permax')) : null },
         nowMs:    nowMs,
         imageUrl: function () { return '' },
       }
