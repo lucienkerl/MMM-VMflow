@@ -147,6 +147,7 @@ Alles auf einen Blick: heutiger Umsatz, Trends, Wochen-/Monatsblöcke und die pr
     baseUrl: "http://192.168.1.10:8000",
     apiKey:  "vmf_xxxxxxxxxxxxxxxx",
     layout: "combo",
+    maxRowsPerMachine: 3,  // optional: je Automat die Top-3-Produkte zum Nachfüllen
   }
 }
 ```

@@ -147,6 +147,7 @@ Everything at a glance: today's revenue, trends, week/month blocks, and the per-
     baseUrl: "http://192.168.1.10:8000",
     apiKey:  "vmf_xxxxxxxxxxxxxxxx",
     layout: "combo",
+    maxRowsPerMachine: 3,  // optional: each machine shows its top 3 products to refill
   }
 }
 ```
