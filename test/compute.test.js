@@ -101,14 +101,16 @@ test('computeMachineStock: empty=critical, low, fill, with warehouse availabilit
   ]
   const warehouse = new Map([['p1', 50], ['p2', 20]]) // p3 missing
   const out = C.computeMachineStock(trays, pm(), warehouse, true).get('m1')
-  assert.equal(out.stock_health, 'critical')
-  assert.equal(out.empty_trays, 1)
-  assert.equal(out.low_trays, 2) // empty(p1) + low(p2)
-  // p1 deficit aggregated: empty tray (10-0=10) + fill tray (10-4=6) = 16, severity critical
+  // p1 sits in slots 1+3 → one group: stock 4 of 20, min 2, fill 6 → 'fill', not empty.
+  // The machine is 'low' because of p2; the swap (p3) doesn't drive health.
+  assert.equal(out.stock_health, 'low')
+  assert.equal(out.empty_trays, 0)
+  assert.equal(out.low_trays, 1) // low(p2)
+  // p1 deficit is the group's: (10-0) + (10-4) = 16, severity fill
   const p1 = out.tray_summary.find(i => i.product_id === 'p1')
-  assert.equal(p1.deficit, 16); assert.equal(p1.severity, 'critical'); assert.equal(p1.in_stock, true)
-  // sorted by deficit desc
-  assert.equal(out.tray_summary[0].product_id, 'p1')
+  assert.equal(p1.deficit, 16); assert.equal(p1.severity, 'fill'); assert.equal(p1.in_stock, true); assert.equal(p1.slots, 2)
+  // severity first: low(p2) before fill(p1)
+  assert.deepEqual(out.tray_summary.map(i => i.product_id), ['p2', 'p1'])
   // p3 -> no_stock_summary, swap (severity critical), in_stock false
   const p3 = out.no_stock_summary.find(i => i.product_id === 'p3')
   assert.equal(p3.severity, 'critical'); assert.equal(p3.in_stock, false); assert.equal(p3.discontinued, true)
@@ -138,6 +140,92 @@ test('computeMachineStock sorts tray_summary by severity (critical→low→fill)
   const out = C.computeMachineStock(trays, new Map(), new Map(), false).get('m1') // no warehouses → all refillable
   assert.deepEqual(out.tray_summary.map(i => i.severity), ['critical', 'low', 'fill'])
   assert.deepEqual(out.tray_summary.map(i => i.product_id), ['pCrit', 'pLow', 'pFill'])
+})
+
+test('groupTraysByProduct sums a product across its slots and keeps first-appearance order', () => {
+  const trays = [
+    { machine_id: 'm1', item_number: 12, product_id: 'cola', capacity: 8, current_stock: 0, min_stock: 2, fill_when_below: 0 },
+    { machine_id: 'm1', item_number: 13, product_id: 'cola', capacity: 8, current_stock: 2, min_stock: 2, fill_when_below: 0 },
+    { machine_id: 'm1', item_number: 14, product_id: 'cola', capacity: 8, current_stock: 9, min_stock: 2, fill_when_below: 0 },
+    { machine_id: 'm1', item_number: 15, product_id: null, capacity: 8, current_stock: 0, min_stock: 0, fill_when_below: 0 },
+    { machine_id: 'm2', item_number: 1, product_id: 'cola', capacity: 5, current_stock: 0, min_stock: 1, fill_when_below: 0 },
+  ]
+  const groups = C.groupTraysByProduct(trays)
+  assert.equal(groups.length, 2) // unassigned slot skipped, machines kept apart
+  const g = groups[0]
+  assert.equal(g.machine_id, 'm1'); assert.equal(g.trays.length, 3)
+  assert.equal(g.current_stock, 11); assert.equal(g.capacity, 24); assert.equal(g.min_stock, 6)
+  assert.equal(g.state, 'ok')       // 11 Cola left is not "sold out"
+  assert.equal(g.deficit, 13)
+  assert.equal(g.emptySlots, 1)     // slot 12 is empty while the product is stocked elsewhere
+  assert.equal(groups[1].state, 'critical'); assert.equal(groups[1].emptySlots, 0)
+})
+
+test('groupNeedsRefill: ok never, a full fill-tier group never', () => {
+  assert.equal(C.groupNeedsRefill({ state: 'ok', deficit: 5 }), false)
+  assert.equal(C.groupNeedsRefill({ state: 'fill', deficit: 0 }), false)
+  assert.equal(C.groupNeedsRefill({ state: 'fill', deficit: 2 }), true)
+  assert.equal(C.groupNeedsRefill({ state: 'critical', deficit: 4 }), true)
+})
+
+test('computeMachineStock: a product empty in one slot but stocked in another is not critical', () => {
+  // Cola at 0/2/9 in three spirals = 11 Cola. Before: machine "critical", Cola listed red.
+  const trays = [
+    { machine_id: 'm1', item_number: 12, product_id: 'p1', capacity: 8, current_stock: 0, min_stock: 2, fill_when_below: 0 },
+    { machine_id: 'm1', item_number: 13, product_id: 'p1', capacity: 8, current_stock: 2, min_stock: 2, fill_when_below: 0 },
+    { machine_id: 'm1', item_number: 14, product_id: 'p1', capacity: 8, current_stock: 9, min_stock: 2, fill_when_below: 0 },
+  ]
+  const out = C.computeMachineStock(trays, pm(), new Map(), false).get('m1')
+  assert.equal(out.stock_health, 'ok')
+  assert.equal(out.empty_trays, 0)
+  assert.equal(out.low_trays, 0)
+  assert.equal(out.tray_summary.length, 0)
+  assert.equal(out.empty_slots_with_stock, 1) // hint only
+  assert.equal(out.total_trays, 3)            // slots, not products
+})
+
+test('computeMachineStock: a multi-slot product is one row with the summed deficit; counts are products', () => {
+  const trays = [
+    { machine_id: 'm1', item_number: 1, product_id: 'p1', capacity: 8, current_stock: 0, min_stock: 2, fill_when_below: 0 },
+    { machine_id: 'm1', item_number: 2, product_id: 'p1', capacity: 8, current_stock: 0, min_stock: 2, fill_when_below: 0 },
+    { machine_id: 'm1', item_number: 3, product_id: 'p2', capacity: 6, current_stock: 1, min_stock: 2, fill_when_below: 0 },
+    { machine_id: 'm1', item_number: 4, product_id: 'p2', capacity: 6, current_stock: 1, min_stock: 2, fill_when_below: 0 },
+  ]
+  const out = C.computeMachineStock(trays, pm(), new Map(), false).get('m1')
+  assert.equal(out.stock_health, 'critical')
+  assert.equal(out.empty_trays, 1) // one product sold out everywhere, not two slots
+  assert.equal(out.low_trays, 2)   // p1 (critical) + p2 (low: 2 <= 4)
+  assert.equal(out.tray_summary.length, 2)
+  assert.deepEqual(out.tray_summary.map(i => [i.product_id, i.severity, i.deficit, i.slots]),
+    [['p1', 'critical', 16, 2], ['p2', 'low', 10, 2]])
+})
+
+test('computeMachineStock: linked machines get no empty-slot hint', () => {
+  const trays = [
+    { machine_id: 'm1', item_number: 1, product_id: 'p1', capacity: 8, current_stock: 0, min_stock: 1, fill_when_below: 0 },
+    { machine_id: 'm1', item_number: 2, product_id: 'p1', capacity: 8, current_stock: 7, min_stock: 1, fill_when_below: 0 },
+  ]
+  assert.equal(C.computeMachineStock(trays, pm(), new Map(), false).get('m1').empty_slots_with_stock, 1)
+  assert.equal(C.computeMachineStock(trays, pm(), new Map(), false, new Set(['m1'])).get('m1').empty_slots_with_stock, 0)
+})
+
+test('buildViewModel reads linked_selections from the machines resource', () => {
+  const now = new Date('2026-05-29T12:00:00Z')
+  const raw = {
+    machines: [{ id: 'm1', name: 'North', embedded: null, linked_selections: true }, { id: 'm2', name: 'South', embedded: null }],
+    devices: [], products: [], batches: [], sales: [],
+    trays: [
+      { machine_id: 'm1', item_number: 1, product_id: 'p1', capacity: 8, current_stock: 0, min_stock: 1, fill_when_below: 0 },
+      { machine_id: 'm1', item_number: 2, product_id: 'p1', capacity: 8, current_stock: 7, min_stock: 1, fill_when_below: 0 },
+      { machine_id: 'm2', item_number: 1, product_id: 'p1', capacity: 8, current_stock: 0, min_stock: 1, fill_when_below: 0 },
+      { machine_id: 'm2', item_number: 2, product_id: 'p1', capacity: 8, current_stock: 7, min_stock: 1, fill_when_below: 0 },
+    ],
+  }
+  const vm = C.buildViewModel(raw, { timezone: 'UTC' }, now)
+  const byId = new Map(vm.machines.map(m => [m.id, m]))
+  assert.equal(byId.get('m1').empty_slots_with_stock, 0)
+  assert.equal(byId.get('m2').empty_slots_with_stock, 1)
+  assert.equal(vm.totals.refillMachines, 0)
 })
 
 test('buildViewModel assembles kpis/machines/feed/totals and honors machineIds filter', () => {

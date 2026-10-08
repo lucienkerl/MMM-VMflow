@@ -14,6 +14,7 @@ Ein [MagicMirror²](https://magicmirror.builders/)-Modul, das Live-Daten von Ver
 - **Live-Verkaufsfeed** — die letzten Verkäufe über alle (oder ausgewählte) Automaten, mit Produktname, Preis, Automatennamen und relativem Zeitstempel.
 - **Nachfüllen nötig** — Automaten, die aufgefüllt werden müssen, nach Dringlichkeit sortiert (kritisch zuerst), mit Füllstandsbalken.
 - **Nachfüll-Produkte** — produktgenaue Liste pro Automat, farblich nach Schweregrad kodiert (leer → rot, niedrig → orange, auffüllen → blau, Tauschen/Kein Lager → orange), passend zum Management-Dashboard.
+- **Produkte in mehreren Fächern** — der Bestand wird wie im Management-Dashboard pro Produkt bewertet, nicht pro Spirale: Cola in drei Spiralen mit 0/2/9 sind 11 Cola, kein leerer Automat. Ein Produkt in mehreren Fächern ist eine Zeile mit der summierten Nachfüllmenge und einem „N Fächer“-Tag; eine leere Spirale, deren Produkt noch in einem anderen Fach liegt, erscheint nur als Hinweiszeile (ausgeblendet bei Automaten mit der Einstellung *„Gleiche Produkte sind verknüpft“*).
 - **Automaten** — kompaktes Raster aller Automaten mit Online-/Offline-Status, Lagerstand in Prozent und heutigem Umsatz.
 - **Ticker** — eine einzeilige Zusammenfassung für eine obere oder untere Leiste.
 
@@ -346,7 +347,7 @@ npm test
 node --test
 ```
 
-Die Suite umfasst `lib/compute.js` (KPI-Bucketung, Trendberechnung, Lagergesundheitslogik, Anzeigemodell-Aufbau) und `lib/api-client.js` (Pagination, 401/429-Fehler-Mapping) — insgesamt 13 Tests.
+Die Suite umfasst `lib/compute.js` (KPI-Bucketung, Trendberechnung, Lagergesundheitslogik, Anzeigemodell-Aufbau) und `lib/api-client.js` (Pagination, 401/429-Fehler-Mapping) — insgesamt 24 Tests.
 
 ### Screenshots neu generieren
 

@@ -61,8 +61,13 @@ KPI or stock logic, re-verify against these source files in the parent project
   `week`/`lastWeek` = rolling 7d/14d; `month`/`lastMonth` = calendar month. Revenue = Σ `item_price`.
 - **Trend %** (`components/SectionCards.vue` `pctChange`): `prev===0 ? (cur>0?100:null) : round((cur-prev)/prev*100)`.
 - **Stock health & refill summaries** (`composables/useMachines.ts`, `lib/stock-health.ts`):
-  `isEmpty`/`isLow`/`isFillBelow`, per-product deficit aggregation, pass-2 fill, severity
-  `critical|low|fill`, warehouse-availability split. Summaries are sorted by severity
+  stock is judged **per product within a machine** (`groupTraysByProduct`: a product's slots
+  are one group whose stock/capacity/`min_stock`/`fill_when_below` are summed, then
+  `classifyTrayStock` + `groupNeedsRefill`), severity `critical|low|fill`,
+  warehouse-availability split. `empty_trays`/`low_trays`/`no_stock_trays` count products,
+  `total_trays` counts slots; `empty_slots_with_stock` is a hint only and is 0 for machines
+  with `linked_selections`. Module-only difference: fill-tier products are listed only on a
+  machine that already has a critical/low refillable product (no `fill` machine health). Summaries are sorted by severity
   (critical → low → fill), then deficit desc within each severity.
 
 Known invariants (don't regress):
@@ -88,7 +93,7 @@ Known invariants (don't regress):
 ## Testing
 
 ```bash
-node --test        # or: npm test  — 13 tests across compute / api-client / fetch-all
+node --test        # or: npm test  — 24 tests across compute / api-client / fetch-all
 node --check <file> # syntax-check browser files (renderers, module, node_helper) — they are
                     # not runnable in Node (they need window/MagicMirror globals)
 ```
@@ -118,7 +123,7 @@ render each layout at a fixed width on a black background. Headless Chrome works
   "file://$PWD/preview/preview.html?layout=combo&lang=en&shot=1"
 ```
 
-Heights are per-layout (combo ~380, kpi ~350, feed ~260, refillStatus ~210, refillProducts ~360,
+Heights are per-layout (combo ~380, kpi ~350, feed ~260, refillStatus ~210, refillProducts ~400,
 fleet ~200, ticker ~110). Keep `en/` and `de/` in sync, and update the README image references.
 
 ## Config options

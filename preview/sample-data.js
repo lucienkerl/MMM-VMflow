@@ -78,16 +78,17 @@
 
     // ── Machines (sorted by urgency: critical → low → ok → offline) ──────────
     machines: [
-      // ── 1. Bürohaus Nord — CRITICAL (stock_percent 18%, 3 empty, 5 low) ───
+      // ── 1. Bürohaus Nord — CRITICAL (stock_percent 18%, 1 empty, 2 low — counts are products) ───
       {
         id: 'm1',
         name: 'Bürohaus Nord',
         online: true,
         stock_health: 'critical',
         stock_percent: 18,
-        empty_trays: 3,
-        low_trays: 5,
+        empty_trays: 1,
+        low_trays: 2,
         no_stock_trays: 2,
+        empty_slots_with_stock: 0,
         total_trays: 12,
         today_revenue: 42.00,
         // In-stock refillable items (appear as colored rows in refillProducts)
@@ -98,9 +99,10 @@
             image_path: 'p1.jpg',
             sellprice: 2.50,
             discontinued: false,
-            deficit: 8,
+            deficit: 14,
             in_stock: true,
             severity: 'critical',  // red
+            slots: 2,              // one product in two spirals → "2 Fächer" tag, summed deficit
           },
           {
             product_id: 'p2',
@@ -111,6 +113,7 @@
             deficit: 6,
             in_stock: true,
             severity: 'low',       // amber
+            slots: 1,
           },
           {
             product_id: 'p3',
@@ -121,6 +124,7 @@
             deficit: 5,
             in_stock: true,
             severity: 'fill',      // blue — fill threshold but not empty/low
+            slots: 1,
           },
         ],
         // Non-refillable no-stock items (no warehouse stock)
@@ -134,6 +138,7 @@
             deficit: 3,
             in_stock: false,
             severity: 'critical',  // orange swap row
+            slots: 1,
           },
           {
             product_id: 'p5',
@@ -144,6 +149,7 @@
             deficit: 2,
             in_stock: false,
             severity: 'low',       // dimmed (non-critical no-stock)
+            slots: 1,
           },
         ],
       },
@@ -158,6 +164,7 @@
         empty_trays: 0,
         low_trays: 1,
         no_stock_trays: 0,
+        empty_slots_with_stock: 1, // hint line under the machine header
         total_trays: 8,
         today_revenue: 31.00,
         tray_summary: [
@@ -170,6 +177,7 @@
             deficit: 2,
             in_stock: true,
             severity: 'low',       // amber
+            slots: 1,
           },
         ],
         no_stock_summary: [],
@@ -185,6 +193,7 @@
         empty_trays: 0,
         low_trays: 0,
         no_stock_trays: 0,
+        empty_slots_with_stock: 0,
         total_trays: 10,
         today_revenue: 88.00,
         tray_summary: [],
@@ -201,6 +210,7 @@
         empty_trays: 0,
         low_trays: 0,
         no_stock_trays: 0,
+        empty_slots_with_stock: 0,
         total_trays: 6,
         today_revenue: 0,
         tray_summary: [],

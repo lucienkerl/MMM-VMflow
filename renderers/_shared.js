@@ -59,6 +59,8 @@
     name.appendChild(document.createTextNode((!item.in_stock && item.severity === 'critical' ? '⇄ ' : '') + item.product_name + ' '))
     name.appendChild(el('span', 'vmf-def', `(-${item.deficit})`))
     left.appendChild(name)
+    // A product in several spirals is one row; its deficit is summed over all of them.
+    if (item.slots > 1) left.appendChild(el('span', 'vmf-slots', ctx.t('SLOTS_N', { n: item.slots })))
     if (item.sellprice != null) left.appendChild(el('span', 'vmf-price', fmtCurrency(item.sellprice, ctx.locale)))
     if (item.discontinued) left.appendChild(el('span', 'vmf-disc', '×'))
     row.appendChild(left)
@@ -67,6 +69,14 @@
         : el('span', 'vmf-tag-no', ctx.t('NO_STOCK'))
     row.appendChild(tag)
     return row
+  }
+
+  // "N slots empty, product in another slot" — a hint, never a refill reason. Null when none
+  // (or the machine has linked selections, which compute.js already folds into the count).
+  function emptySlotHint(m, ctx) {
+    const n = m.empty_slots_with_stock || 0
+    if (n <= 0) return null
+    return el('div', 'vmf-dim vmf-hint', n === 1 ? ctx.t('EMPTY_SLOT_HINT_ONE') : ctx.t('EMPTY_SLOT_HINT_N', { n }))
   }
 
   // Machines with something to show in the per-product refill view: not 'ok', OR with
@@ -105,6 +115,7 @@
       const left = el('span'); left.appendChild(statusDot(m.stock_health)); left.appendChild(document.createTextNode(m.name))
       head.appendChild(left); head.appendChild(el('span', 'vmf-dim', m.stock_percent + '%'))
       frag.appendChild(head)
+      const hint = emptySlotHint(m, ctx); if (hint) frag.appendChild(hint)
       let taken = 0, trayShown = 0
       for (const item of m.tray_summary) { if (taken >= take) break; frag.appendChild(productRow(item, ctx)); taken++; trayShown++ }
       if (trayShown > 0 && swaps.length > 0 && taken < take) frag.appendChild(el('hr', 'vmf-divider'))
@@ -115,5 +126,5 @@
     return frag
   }
 
-  root.VMflowShared = { el, fmtCurrency, fmtPct, timeAgo, label, kpiTrend, fillBar, statusDot, productRow, periodBlock, refillNeedingMachines, refillProductGroups }
+  root.VMflowShared = { el, fmtCurrency, fmtPct, timeAgo, label, kpiTrend, fillBar, statusDot, productRow, periodBlock, refillNeedingMachines, refillProductGroups, emptySlotHint }
 })(window)
