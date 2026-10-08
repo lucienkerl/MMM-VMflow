@@ -14,6 +14,7 @@ A [MagicMirror²](https://magicmirror.builders/) module that displays live vendi
 - **Live sales feed** — most recent vends across all (or selected) machines, with product name, price, machine name, and relative time.
 - **Refill status** — machines needing restocking, urgency-sorted (critical first), with fill-percentage bars.
 - **Refill products** — per-machine product lists colour-coded by severity (empty → red, low → amber, fill → blue, swap/no-warehouse → orange), mirroring the management dashboard.
+- **Products in several slots** — stock is judged per product, not per spiral, like the management dashboard: Cola in three spirals at 0/2/9 is 11 Cola, not an empty machine. A multi-slot product is one row with the summed refill quantity and an "N slots" tag; an empty spiral whose product is still stocked in another one only shows a hint line (hidden for machines with the *"Same products are linked"* setting).
 - **Fleet overview** — compact grid of every machine with online/offline status, stock percentage, and today's revenue.
 - **Ticker** — a single-line summary for a top or bottom bar.
 
@@ -346,7 +347,7 @@ npm test
 node --test
 ```
 
-The suite covers `lib/compute.js` (KPI bucketing, trend calculation, stock-health logic, view model assembly) and `lib/api-client.js` (pagination, 401/429 error mapping) — 13 tests total.
+The suite covers `lib/compute.js` (KPI bucketing, trend calculation, stock-health logic, view model assembly) and `lib/api-client.js` (pagination, 401/429 error mapping) — 24 tests total.
 
 ### Regenerating screenshots
 

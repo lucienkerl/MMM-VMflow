@@ -16,6 +16,7 @@
       if (m.low_trays - m.empty_trays > 0) parts.push(ctx.t('LOW_N', { n: m.low_trays - m.empty_trays }))
       head.appendChild(left); head.appendChild(S.el('span', 'vmf-dim', parts.join(' · ')))
       block.appendChild(head)
+      const hint = S.emptySlotHint(m, ctx); if (hint) block.appendChild(hint)
       const barRow = S.el('div', 'vmf-row'); barRow.style.marginTop = '6px'
       barRow.appendChild(S.fillBar(m.stock_percent))
       barRow.appendChild(S.el('span', 'vmf-dim', m.stock_percent + '%'))
